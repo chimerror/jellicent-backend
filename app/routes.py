@@ -4,6 +4,18 @@ from flask import Blueprint, jsonify, make_response, abort, request
 
 players_bp = Blueprint("players", __name__, url_prefix = "/players")
 
+@players_bp.route("", methods = ["GET"])
+def get_all_players():
+    players_response = []
+    players = Player.query.all()
+    for player in players:
+        players_response.append({
+            "id": player.id,
+            "user_name": player.user_name,
+            "display_name": player.display_name
+        })
+    return jsonify(players_response)
+
 @players_bp.route("", methods = ["POST"])
 def create_player():
     request_body = request.get_json()
@@ -16,18 +28,6 @@ def create_player():
     return make_response(
         f"Player {new_player.user_name} successfully created",
         201)
-
-@players_bp.route("", methods = ["GET"])
-def get_all_players():
-    players_response = []
-    players = Player.query.all()
-    for player in players:
-        players_response.append({
-            "id": player.id,
-            "user_name": player.user_name,
-            "display_name": player.display_name
-        })
-    return jsonify(players_response)
 
 @players_bp.route("/<player_id>", methods = ["GET"])
 def get_player_by_id(player_id):
