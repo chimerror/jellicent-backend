@@ -38,6 +38,15 @@ def get_player_by_id(player_id):
         "display_name": player.display_name
     }
 
+@players_bp.route("/<player_id>", methods = ["DELETE"])
+def delete_player(player_id):
+    player = validate_player_id(player_id)
+
+    db.session.delete(player)
+    db.session.commit()
+
+    return make_response(f"Player {player.user_name} successfully deleted")
+
 @players_bp.route("/<player_id>", methods = ["PUT"])
 def update_player(player_id):
     player = validate_player_id(player_id)
