@@ -38,6 +38,18 @@ def get_player_by_id(player_id):
         "display_name": player.display_name
     }
 
+@players_bp.route("/<player_id>", methods = ["PUT"])
+def update_player(player_id):
+    player = validate_player_id(player_id)
+    request_body = request.get_json()
+
+    player.user_name = request_body["user_name"],
+    player.display_name = request_body["display_name"]
+
+    db.session.commit()
+
+    return make_response(f"Player {player.user_name} successfully updated")
+
 def validate_player_id(player_id):
     try:
         player_id = int(player_id)
