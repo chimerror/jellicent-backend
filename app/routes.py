@@ -9,7 +9,7 @@ class Player:
 players = [
     Player(1, "jayce", "Jayce Mitchell"),
     Player(2, "ada", "Ada Gates"),
-    Player(2, "chimmy", "Chimerelda Error"),
+    Player(3, "chimmy", "Chimerelda Error"),
 ]
 
 players_bp = Blueprint("players", __name__, url_prefix = "/players")
