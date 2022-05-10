@@ -14,7 +14,7 @@ def create_app(test_config = None):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from .routes import players_bp
+    from .player_routes import players_bp
     app.register_blueprint(players_bp)
 
     from app.models.player import Player
