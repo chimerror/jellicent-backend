@@ -1,22 +1,26 @@
-from flask import Blueprint, jsonify, make_response, abort
-
-class Player:
-    def __init__(self, id, user_name, display_name):
-        self.id = id
-        self.user_name = user_name
-        self.display_name = display_name
-
-players = [
-    Player(1, "jayce", "Jayce Mitchell"),
-    Player(2, "ada", "Ada Gates"),
-    Player(3, "chimmy", "Chimerelda Error"),
-]
+from app import db
+from app.models.player import Player
+from flask import Blueprint, jsonify, make_response, abort, request
 
 players_bp = Blueprint("players", __name__, url_prefix = "/players")
+
+@players_bp.route("", methods = ["POST"])
+def create_player():
+    request_body = request.get_json()
+    new_player = Player(
+        user_name = request_body["user_name"],
+        display_name = request_body["display_name"])
+    db.session.add(new_player)
+    db.session.commit()
+
+    return make_response(
+        f"Player {new_player.user_name} successfully created",
+        201)
 
 @players_bp.route("", methods = ["GET"])
 def get_all_players():
     players_response = []
+    players = Player.query.all()
     for player in players:
         players_response.append({
             "id": player.id,
@@ -28,7 +32,6 @@ def get_all_players():
 @players_bp.route("/<player_id>", methods = ["GET"])
 def get_player_by_id(player_id):
     player = validate_player_id(player_id)
-
     return {
         "id": player.id,
         "user_name": player.user_name,
@@ -42,9 +45,10 @@ def validate_player_id(player_id):
         abort(make_response(
             {"message": f"{player_id} is not a valid player ID"}, 400))
     
-    for player in players:
-        if player.id == player_id:
-            return player
-    
-    abort(make_response(
-            {"message": f"player {player_id} is not a valid player ID"}, 404))
+    player = Player.query.get(player_id)
+
+    if not player:
+        abort(make_response(
+            {"message": f"no player with ID {player_id} was found"}, 404))
+
+    return player
