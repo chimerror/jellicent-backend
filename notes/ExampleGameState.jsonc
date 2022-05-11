@@ -1,0 +1,49 @@
+{
+    "current-state": "waiting-for-choice",
+    "active-player-index": 0,
+    "use-advanced-scoring": true,
+    "assign-wilds-on-take": true,
+    "piles": [
+        ["snake", "plus-two"]
+    ],
+    "deck": ["rabbit", "snake", "chicken" /* ... */], // Never would actually return this
+    "current-deck_index": 32, // Never would actually return this
+    "cards-left": 25, // Will actually just be calculated by deck size and index
+    "last-round": false, // Calculated, not persisted as it's always after 15
+    "players": [
+        {
+            "id": 1,
+            "starting-card": "rabbit",
+            "score": 12, // Calculated, not persisted
+            "hand": {
+                "rat": 2,
+                "rabbit": 3
+            },
+            "took-this-round": false
+        },
+        {
+            "id": 2,
+            "starting-card": "snake",
+            "score": 13, // Calculated, not persisted
+            "hand": {
+                "snake": 1,
+                "sheep": 2,
+                "monkey": 3
+            },
+            "took-this-round": true
+        },
+        {
+            "id": 4,
+            "starting-card": "chicken",
+            "score": 13, // Calculated, not persisted
+            "hand": {
+                "chicken": 1,
+                "dog": 2,
+                "wild": 3,
+                "plus-two": 1
+            },
+            "wild-assignments": ["dog", "dog", "chicken"],
+            "took-this-round": true
+        }
+    ]
+}

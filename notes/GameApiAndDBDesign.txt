@@ -1,0 +1,66 @@
+games/
+    GET - Get all active game IDs
+    POST - Start a new game
+        {
+            "players": [1, 3, 5, 4],
+            "use-advanced-scoring": false,
+            "assign-wilds-on-take": true
+        }
+games/<id>/
+    GET - Get current status
+    DELETE - Delete game (Maybe skip?)
+games/<id>/make_choice
+    PATCH - Make choice
+        {
+            "choice": "draw-card",
+        }
+        {
+            "choice": "take-pile",
+            "pile-to-take": 2,
+            "wild-assignments": ["rabbit", "snake"] // Only if necessary
+        }
+games/<id>/place_draw
+    PATCH - place draw
+        {
+            "pile-to-place-on": 3
+        }
+games/<id>/finally_assign
+    PATCH - assign wilds/positive cards
+        {
+            "assign-manually": false
+        }
+        {
+            "assign-manually": true,
+            "positive-cards": ["sheep", "monkey", "snake"]
+            "wild-assignments": ["dog"]
+        }
+
+DB Design:
+games table
+    id - uuid
+    state - enum (waiting-for-choice, placing-draw, final-assignment, completed)
+    active_player_index - int
+    advanced_scoring - bool, default false
+    assign_wilds_on_take - bool, default false
+    deck - json
+    current_deck_index - int
+    pile_one - json, nullable
+    pile_two - json, nullable
+    pile_three - json, nullable
+
+games_x_players table
+    game_id - FK
+    player_id - FK
+    player_index - int
+    starting_card - enum (card types)
+    took_this_round - bool
+    wild_count - int, default 0
+    wild_assignments - json, nullable
+    plus_two_count - int, default 0
+    rat_count - int, default 0
+    rabbit_count - int, default 0
+    snake_count - int, default 0
+    sheep_count - int, default 0
+    monkey_count - int, default 0
+    chicken_count - int, default 0
+    dog_count - int, default 0
