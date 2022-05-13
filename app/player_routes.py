@@ -19,6 +19,32 @@ def get_all_players():
 @players_bp.route("", methods = ["POST"])
 def create_player():
     request_body = request.get_json()
+
+    if not "user_name" in request_body:
+        abort(make_response(
+            { "message": "Missing required field 'user_name'" }, 400))
+
+    new_user_name = request_body["user_name"]
+    if not new_user_name.isalnum():
+        abort(make_response(
+            { "message": "Field 'user_name' must have one or more alphanumeric characters only" }
+            , 400))
+
+    existing_player = Player.query.filter_by(user_name = new_user_name).first()
+    if not existing_player is None:
+        abort(make_response(
+            { "message": f"A player with user name '{new_user_name}' already exists" }
+            , 409))
+
+    if not "display_name" in request_body:
+        abort(make_response(
+            { "message": "Missing required field 'display_name'" }, 400))
+
+    new_display_name = request_body["display_name"]
+    if (not len(new_display_name) > 0) or new_display_name.isspace():
+        abort(make_response(
+            { "message": "Field 'display_name' must have one or more non-whitespace characters" }, 400))
+
     new_player = Player(
         user_name = request_body["user_name"],
         display_name = request_body["display_name"])
