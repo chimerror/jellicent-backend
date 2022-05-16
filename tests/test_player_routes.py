@@ -88,6 +88,28 @@ def test_create_player_already_existing_user_name(client, five_players):
         "message": "A player with user name 'f0c5' already exists"
     }
 
+def test_create_player_already_existing_display_name(client, five_players):
+    EXPECTED_USER_NAME = "adag2"
+    EXPECTED_DISPLAY_NAME = "Ada Gates"
+    post_response = client.post("/players", json = {
+        "user_name": EXPECTED_USER_NAME,
+        "display_name": EXPECTED_DISPLAY_NAME })
+    post_response_body = post_response.text
+    
+    assert post_response.status_code == 201
+    assert post_response_body == \
+        f"Player {EXPECTED_USER_NAME} successfully created"
+
+    get_response = client.get("/players/6")
+    get_response_body = get_response.get_json()
+
+    assert get_response.status_code == 200
+    assert get_response_body == {
+        "id": 6,
+        "user_name": EXPECTED_USER_NAME,
+        "display_name": EXPECTED_DISPLAY_NAME
+    }
+
 def test_create_player_missing_display_name(client):
     response = client.post("/players", json = {
         "user_name": "MissingDisplayName" })
