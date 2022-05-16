@@ -1,6 +1,5 @@
 from urllib import response
 
-
 def test_get_all_players_happy_path(client, five_players):
     response = client.get("/players")
     response_body = response.get_json()
@@ -130,4 +129,22 @@ def test_get_player_by_id_happy_path(client, five_players):
         "id": 2,
         "user_name": five_players[1].user_name,
         "display_name": five_players[1].display_name
+    }
+
+def test_get_player_by_id_invalid_id(client):
+    response = client.get("/players/foo")
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "'foo' is not a valid player ID"
+    }
+
+def test_get_player_by_id_nonexistent_id(client, five_players):
+    response = client.get("/players/7")
+    response_body = response.get_json()
+
+    assert response.status_code == 404
+    assert response_body == {
+        "message": f"no player with ID 7 was found"
     }

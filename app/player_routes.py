@@ -90,7 +90,7 @@ def validate_player_id(player_id):
         player_id = int(player_id)
     except:
         abort(make_response(
-            {"message": f"{player_id} is not a valid player ID"}, 400))
+            {"message": f"'{player_id}' is not a valid player ID"}, 400))
     
     player = Player.query.get(player_id)
 
