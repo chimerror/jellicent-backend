@@ -148,3 +148,37 @@ def test_get_player_by_id_nonexistent_id(client, five_players):
     assert response_body == {
         "message": f"no player with ID 7 was found"
     }
+
+def test_delete_player_happy_path(client, five_players):
+    delete_response = client.delete("/players/3")
+    delete_response_body = delete_response.text
+
+    assert delete_response.status_code == 200
+    assert delete_response_body == \
+        f"Player {five_players[2].user_name} successfully deleted"
+
+    get_response = client.get("/players/3")
+    get_response_body = get_response.get_json()
+
+    assert get_response.status_code == 404
+    assert get_response_body == {
+        "message": f"no player with ID 3 was found"
+    }
+
+def test_delete_player_invalid_id(client):
+    response = client.delete("/players/foo")
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "'foo' is not a valid player ID"
+    }
+
+def test_delete_player_nonexistent_id(client, five_players):
+    response = client.get("/players/7")
+    response_body = response.get_json()
+
+    assert response.status_code == 404
+    assert response_body == {
+        "message": f"no player with ID 7 was found"
+    }
