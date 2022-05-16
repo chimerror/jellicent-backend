@@ -27,4 +27,7 @@ def create_app(test_config = None):
     from .player_routes import players_bp
     app.register_blueprint(players_bp)
 
+    from .game_routes import games_bp
+    app.register_blueprint(games_bp)
+
     return app

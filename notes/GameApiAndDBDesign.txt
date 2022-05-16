@@ -38,9 +38,9 @@ games/<id>/finally_assign
 DB Design:
 games table
     id - uuid
-    state - enum (waiting-for-choice, placing-draw, final-assignment, completed)
+    status - enum (waiting-for-choice, placing-draw, final-assignment, completed)
     active_player_index - int
-    advanced_scoring - bool, default false
+    use_advanced_scoring - bool, default false
     assign_wilds_on_take - bool, default false
     deck - json
     current_deck_index - int
