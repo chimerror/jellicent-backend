@@ -175,7 +175,51 @@ def test_delete_player_invalid_id(client):
     }
 
 def test_delete_player_nonexistent_id(client, five_players):
-    response = client.get("/players/7")
+    response = client.delete("/players/7")
+    response_body = response.get_json()
+
+    assert response.status_code == 404
+    assert response_body == {
+        "message": f"no player with ID 7 was found"
+    }
+
+def test_update_player_happy_path(client, five_players):
+    EXPECTED_USER_NAME = "chimerror"
+    EXPECTED_DISPLAY_NAME = "Chimerelda E. Error"
+    put_response = client.put("/players/2", json = {
+        "user_name": EXPECTED_USER_NAME,
+        "display_name": EXPECTED_DISPLAY_NAME })
+    put_response_body = put_response.text
+
+    assert put_response.status_code == 200
+    assert put_response_body == \
+        f"Player {five_players[1].user_name} successfully updated"
+
+    get_response = client.get("/players/2")
+    get_response_body = get_response.get_json()
+
+    assert get_response.status_code == 200
+    assert get_response_body == {
+        "id": 2,
+        "user_name": EXPECTED_USER_NAME,
+        "display_name": EXPECTED_DISPLAY_NAME
+    }
+
+def test_update_player_invalid_id(client):
+    response = client.put("/players/foo", json = {
+        "user_name": "InvalidId",
+        "display_name": "Invalid ID on Update" })
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "'foo' is not a valid player ID"
+    }
+
+def test_update_player_nonexistent_id(client, five_players):
+    response = client.put("/players/7", json = {
+        "user_name": "NonexistentId",
+        "display_name": "Nonexistent ID on Update" })
     response_body = response.get_json()
 
     assert response.status_code == 404
