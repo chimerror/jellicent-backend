@@ -168,7 +168,7 @@ def test_get_player_by_id_nonexistent_id(client, five_players):
 
     assert response.status_code == 404
     assert response_body == {
-        "message": f"no player with ID 7 was found"
+        "message": f"No player with ID 7 was found"
     }
 
 def test_delete_player_happy_path(client, five_players):
@@ -184,7 +184,7 @@ def test_delete_player_happy_path(client, five_players):
 
     assert get_response.status_code == 404
     assert get_response_body == {
-        "message": f"no player with ID 3 was found"
+        "message": f"No player with ID 3 was found"
     }
 
 def test_delete_player_invalid_id(client):
@@ -202,7 +202,7 @@ def test_delete_player_nonexistent_id(client, five_players):
 
     assert response.status_code == 404
     assert response_body == {
-        "message": f"no player with ID 7 was found"
+        "message": f"No player with ID 7 was found"
     }
 
 def test_update_player_happy_path(client, five_players):
@@ -246,5 +246,5 @@ def test_update_player_nonexistent_id(client, five_players):
 
     assert response.status_code == 404
     assert response_body == {
-        "message": f"no player with ID 7 was found"
+        "message": f"No player with ID 7 was found"
     }

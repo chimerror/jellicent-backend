@@ -1,5 +1,5 @@
 from app import db
-from app.models.player import Player
+from app.models.player import Player, validate_player_id
 from flask import Blueprint, jsonify, make_response, abort, request
 
 players_bp = Blueprint("players", __name__, url_prefix = "/players")
@@ -84,18 +84,3 @@ def update_player(player_id):
     db.session.commit()
 
     return make_response(f"Player {player.user_name} successfully updated")
-
-def validate_player_id(player_id):
-    try:
-        player_id = int(player_id)
-    except:
-        abort(make_response(
-            {"message": f"'{player_id}' is not a valid player ID"}, 400))
-    
-    player = Player.query.get(player_id)
-
-    if not player:
-        abort(make_response(
-            {"message": f"no player with ID {player_id} was found"}, 404))
-
-    return player
