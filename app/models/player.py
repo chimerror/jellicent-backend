@@ -6,6 +6,7 @@ class Player(db.Model):
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     user_name = db.Column(db.String, nullable = False)
     display_name = db.Column(db.String, nullable = False)
+    games = db.relationship("GamePlayer", back_populates = "player")
 
 def validate_player_id(player_id, player_not_found_status_code = 404):
     try:

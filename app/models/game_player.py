@@ -6,8 +6,10 @@ class GamePlayer(db.Model):
     __tablename__ = "games_x_players"
     game_id = db.Column(
         UUID(as_uuid = True), db.ForeignKey("games.id"), primary_key = True)
+    game = db.relationship("Game", back_populates = "players")
     player_id = db.Column(
         db.Integer, db.ForeignKey("players.id"), primary_key = True)
+    player = db.relationship("Player", back_populates = "games")
     player_index = db.Column(db.SmallInteger, nullable = False)
     starting_card = db.Column(db.Enum(CardType), nullable = False)
     took_this_round = db.Column(db.Boolean, nullable = False, default = False)
