@@ -2,9 +2,10 @@ games/
     GET - Get all active game IDs
     POST - Start a new game
         {
-            "players": [1, 3, 5, 4],
+            "player_ids": [1, 3, 5, 4],
             "use-advanced-scoring": false,
-            "assign-wilds-on-take": true
+            "assign-wilds-on-take": true,
+            "random-seed": 13 // Only for testing purposes
         }
 games/<id>/
     GET - Get current status
