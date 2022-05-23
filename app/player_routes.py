@@ -51,8 +51,9 @@ def create_player():
     db.session.add(new_player)
     db.session.commit()
 
+    db.session.refresh(new_player, ['id'])
     return make_response(
-        f"Player {new_player.user_name} successfully created",
+        f"Player {new_player.user_name} with ID {new_player.id} successfully created",
         201)
 
 @players_bp.route("/<player_id>", methods = ["GET"])

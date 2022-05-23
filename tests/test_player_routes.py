@@ -33,7 +33,7 @@ def test_create_player_happy_path(client):
 
     assert post_response.status_code == 201
     assert post_response_body == \
-        f"Player {EXPECTED_USER_NAME} successfully created"
+        f"Player {EXPECTED_USER_NAME} with ID 1 successfully created"
 
     get_response = client.get("/players/1")
     get_response_body = get_response.get_json()
@@ -98,7 +98,7 @@ def test_create_player_already_existing_display_name(client, five_players):
     
     assert post_response.status_code == 201
     assert post_response_body == \
-        f"Player {EXPECTED_USER_NAME} successfully created"
+        f"Player {EXPECTED_USER_NAME} with ID 6 successfully created"
 
     get_response = client.get("/players/6")
     get_response_body = get_response.get_json()
