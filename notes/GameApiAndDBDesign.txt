@@ -48,6 +48,8 @@ games table
     pile_one - json, nullable
     pile_two - json, nullable
     pile_three - json, nullable
+    pile_four - json, nullable
+    pile_five - json, nullable
 
 games_x_players table
     game_id - FK

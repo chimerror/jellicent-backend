@@ -23,6 +23,8 @@ class Game(db.Model):
     pile_one = db.Column(JSONB)
     pile_two = db.Column(JSONB)
     pile_three = db.Column(JSONB)
+    pile_four = db.Column(JSONB)
+    pile_five = db.Column(JSONB)
 
     def __init__(
         self,
@@ -68,9 +70,11 @@ class Game(db.Model):
         self.deck = json.dumps(deck)
         self.current_deck_index = 0
 
-        self.pile_one = None
-        self.pile_two = None
-        self.pile_three = None
+        self.pile_one = []
+        self.pile_two = []
+        self.pile_three = []
+        self.pile_four = [] if player_count >= 4 else None
+        self.pile_five = [] if player_count == 5 else None
 
 def validate_game_id(game_id, game_not_found_status_code = 404):
     try:
