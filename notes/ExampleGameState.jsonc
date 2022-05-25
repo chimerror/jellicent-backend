@@ -6,6 +6,7 @@
     "piles": [
         ["snake", "plus-two"]
     ],
+    "removed-card": "dog", // Only returned if there are 3 players
     "deck": ["rabbit", "snake", "chicken" /* ... */], // Never would actually return this
     "current-deck_index": 32, // Never would actually return this
     "cards-left": 25, // Will actually just be calculated by deck size and index
@@ -14,7 +15,6 @@
         {
             "id": 1,
             "starting-card": "rabbit",
-            "score": 12, // Calculated, not persisted
             "hand": {
                 "rat": 2,
                 "rabbit": 3
@@ -24,7 +24,6 @@
         {
             "id": 2,
             "starting-card": "snake",
-            "score": 13, // Calculated, not persisted
             "hand": {
                 "snake": 1,
                 "sheep": 2,
@@ -35,7 +34,6 @@
         {
             "id": 4,
             "starting-card": "chicken",
-            "score": 13, // Calculated, not persisted
             "hand": {
                 "chicken": 1,
                 "dog": 2,

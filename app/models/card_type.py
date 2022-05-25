@@ -1,6 +1,6 @@
 from enum import Enum
 
-class CardType(Enum):
+class CardType(str, Enum):
     WILD = "wild"
     PLUS_TWO = "plus two"
     RAT = "rat"
