@@ -21,6 +21,7 @@ def test_get_all_players_no_records(client):
     assert response.status_code == 200
     assert response_body == []
 
+# TODO: Update key names to use kebab case
 def test_create_player_happy_path(client):
     EXPECTED_USER_NAME = "latoya82"
     EXPECTED_DISPLAY_NAME = "Latoya Miller"
