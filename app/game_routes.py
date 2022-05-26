@@ -124,5 +124,5 @@ def get_game_by_id(game_id):
         "players": response_players
     }
     if game.removed_card:
-        response_body["removed_card"] = game.removed_card
+        response_body["removed-card"] = game.removed_card
     return response_body

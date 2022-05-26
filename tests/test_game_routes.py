@@ -33,7 +33,10 @@ def test_create_game_happy_path_three_players(client, five_players):
     assert get_response_body["last-round"] == False
     assert get_response_body["piles"] == [[], [], []]
 
-    validate_response_body_players(get_response_body, EXPECTED_PLAYER_IDS)
+    removed_card = get_response_body["removed-card"]
+    assert removed_card in PLAYER_CARD_VALUES
+
+    validate_response_body_players(get_response_body, EXPECTED_PLAYER_IDS, removed_card)
 
 def test_create_game_happy_path_four_players(client, five_players):
     EXPECTED_PLAYER_IDS = [2, 3, 1, 4]
@@ -93,7 +96,8 @@ def test_create_game_happy_path_five_players(client, five_players):
 
     validate_response_body_players(get_response_body, EXPECTED_PLAYER_IDS)
 
-def validate_response_body_players(response_body, expected_player_ids):
+def validate_response_body_players(
+    response_body, expected_player_ids, removed_card = None):
     actual_players = response_body["players"]
     assert len(actual_players) == len(expected_player_ids)
     actual_player_ids = []
@@ -103,6 +107,7 @@ def validate_response_body_players(response_body, expected_player_ids):
         assert player["took-this-round"] == False
         starting_card = player["starting-card"]
         assert starting_card in PLAYER_CARD_VALUES
+        assert starting_card != removed_card
         assert not starting_card in seen_starting_cards
         seen_starting_cards.append(starting_card)
         assert player["hand"] == {
