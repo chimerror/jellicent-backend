@@ -11,8 +11,8 @@ def get_all_players():
     for player in players:
         players_response.append({
             "id": player.id,
-            "user_name": player.user_name,
-            "display_name": player.display_name
+            "user-name": player.user_name,
+            "display-name": player.display_name
         })
     return jsonify(players_response)
 
@@ -20,14 +20,14 @@ def get_all_players():
 def create_player():
     request_body = request.get_json()
 
-    if not "user_name" in request_body:
+    if not "user-name" in request_body:
         abort(make_response(
-            { "message": "Missing required field 'user_name'" }, 400))
+            { "message": "Missing required field 'user-name'" }, 400))
 
-    new_user_name = request_body["user_name"]
+    new_user_name = request_body["user-name"]
     if not new_user_name.isalnum():
         abort(make_response(
-            { "message": "Field 'user_name' must have one or more alphanumeric characters only" }
+            { "message": "Field 'user-name' must have one or more alphanumeric characters only" }
             , 400))
 
     existing_player = Player.query.filter_by(user_name = new_user_name).first()
@@ -36,18 +36,18 @@ def create_player():
             { "message": f"A player with user name '{new_user_name}' already exists" }
             , 409))
 
-    if not "display_name" in request_body:
+    if not "display-name" in request_body:
         abort(make_response(
-            { "message": "Missing required field 'display_name'" }, 400))
+            { "message": "Missing required field 'display-name'" }, 400))
 
-    new_display_name = request_body["display_name"]
+    new_display_name = request_body["display-name"]
     if (not len(new_display_name) > 0) or new_display_name.isspace():
         abort(make_response(
-            { "message": "Field 'display_name' must have one or more non-whitespace characters" }, 400))
+            { "message": "Field 'display-name' must have one or more non-whitespace characters" }, 400))
 
     new_player = Player(
-        user_name = request_body["user_name"],
-        display_name = request_body["display_name"])
+        user_name = request_body["user-name"],
+        display_name = request_body["display-name"])
     db.session.add(new_player)
     db.session.commit()
 
@@ -61,8 +61,8 @@ def get_player_by_id(player_id):
     player = validate_player_id(player_id)
     return {
         "id": player.id,
-        "user_name": player.user_name,
-        "display_name": player.display_name
+        "user-name": player.user_name,
+        "display-name": player.display_name
     }
 
 @players_bp.route("/<player_id>", methods = ["DELETE"])
@@ -79,8 +79,8 @@ def update_player(player_id):
     player = validate_player_id(player_id)
     request_body = request.get_json()
 
-    player.user_name = request_body["user_name"],
-    player.display_name = request_body["display_name"]
+    player.user_name = request_body["user-name"],
+    player.display_name = request_body["display-name"]
 
     db.session.commit()
 

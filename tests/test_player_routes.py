@@ -6,8 +6,8 @@ def test_get_all_players_happy_path(client, five_players):
     for player in five_players:
         expected_response.append({
             "id": current_expected_id,
-            "user_name": player.user_name,
-            "display_name": player.display_name,
+            "user-name": player.user_name,
+            "display-name": player.display_name,
         })
         current_expected_id = current_expected_id + 1
 
@@ -21,13 +21,12 @@ def test_get_all_players_no_records(client):
     assert response.status_code == 200
     assert response_body == []
 
-# TODO: Update key names to use kebab case
 def test_create_player_happy_path(client):
     EXPECTED_USER_NAME = "latoya82"
     EXPECTED_DISPLAY_NAME = "Latoya Miller"
     post_response = client.post("/players", json = {
-        "user_name": EXPECTED_USER_NAME,
-        "display_name": EXPECTED_DISPLAY_NAME })
+        "user-name": EXPECTED_USER_NAME,
+        "display-name": EXPECTED_DISPLAY_NAME })
     post_response_body = post_response.text
 
     assert post_response.status_code == 201
@@ -40,46 +39,46 @@ def test_create_player_happy_path(client):
     assert get_response.status_code == 200
     assert get_response_body == {
         "id": 1,
-        "user_name": EXPECTED_USER_NAME,
-        "display_name": EXPECTED_DISPLAY_NAME
+        "user-name": EXPECTED_USER_NAME,
+        "display-name": EXPECTED_DISPLAY_NAME
     }
 
 def test_create_player_missing_user_name(client):
     response = client.post("/players", json = {
-        "display_name": "Missing User Name" })
+        "display-name": "Missing User Name" })
     response_body = response.get_json()
 
     assert response.status_code == 400
     assert response_body == {
-        "message": "Missing required field 'user_name'"
+        "message": "Missing required field 'user-name'"
     }
 
 def test_create_player_empty_user_name(client):
     response = client.post("/players", json = {
-        "user_name": "",
-        "display_name": "Empty User Name" })
+        "user-name": "",
+        "display-name": "Empty User Name" })
     response_body = response.get_json()
 
     assert response.status_code == 400
     assert response_body == {
-        "message": "Field 'user_name' must have one or more alphanumeric characters only"
+        "message": "Field 'user-name' must have one or more alphanumeric characters only"
     }
 
 def test_create_player_user_name_with_non_alphanumeric(client):
     response = client.post("/players", json = {
-        "user_name": "latoya 1982!",
-        "display_name": "Non-Alphanumeric User Name" })
+        "user-name": "latoya 1982!",
+        "display-name": "Non-Alphanumeric User Name" })
     response_body = response.get_json()
 
     assert response.status_code == 400
     assert response_body == {
-        "message": "Field 'user_name' must have one or more alphanumeric characters only"
+        "message": "Field 'user-name' must have one or more alphanumeric characters only"
     }
 
 def test_create_player_already_existing_user_name(client, five_players):
     response = client.post("/players", json = {
-        "user_name": "f0c5",
-        "display_name": "0xF0C5 duplicate" })
+        "user-name": "f0c5",
+        "display-name": "0xF0C5 duplicate" })
     response_body = response.get_json()
 
     assert response.status_code == 409
@@ -91,8 +90,8 @@ def test_create_player_already_existing_display_name(client, five_players):
     EXPECTED_USER_NAME = "adag2"
     EXPECTED_DISPLAY_NAME = "Ada Gates"
     post_response = client.post("/players", json = {
-        "user_name": EXPECTED_USER_NAME,
-        "display_name": EXPECTED_DISPLAY_NAME })
+        "user-name": EXPECTED_USER_NAME,
+        "display-name": EXPECTED_DISPLAY_NAME })
     post_response_body = post_response.text
     
     assert post_response.status_code == 201
@@ -105,40 +104,40 @@ def test_create_player_already_existing_display_name(client, five_players):
     assert get_response.status_code == 200
     assert get_response_body == {
         "id": 6,
-        "user_name": EXPECTED_USER_NAME,
-        "display_name": EXPECTED_DISPLAY_NAME
+        "user-name": EXPECTED_USER_NAME,
+        "display-name": EXPECTED_DISPLAY_NAME
     }
 
 def test_create_player_missing_display_name(client):
     response = client.post("/players", json = {
-        "user_name": "MissingDisplayName" })
+        "user-name": "MissingDisplayName" })
     response_body = response.get_json()
 
     assert response.status_code == 400
     assert response_body == {
-        "message": "Missing required field 'display_name'"
+        "message": "Missing required field 'display-name'"
     }
 
 def test_create_player_empty_display_name(client):
     response = client.post("/players", json = {
-        "user_name": "EmptyDisplayName",
-        "display_name": "" })
+        "user-name": "EmptyDisplayName",
+        "display-name": "" })
     response_body = response.get_json()
 
     assert response.status_code == 400
     assert response_body == {
-        "message": "Field 'display_name' must have one or more non-whitespace characters"
+        "message": "Field 'display-name' must have one or more non-whitespace characters"
     }
 
 def test_create_player_whitespace_only_display_name(client):
     response = client.post("/players", json = {
-        "user_name": "WhitespaceOnlyDisplayName",
-        "display_name": "     " })
+        "user-name": "WhitespaceOnlyDisplayName",
+        "display-name": "     " })
     response_body = response.get_json()
 
     assert response.status_code == 400
     assert response_body == {
-        "message": "Field 'display_name' must have one or more non-whitespace characters"
+        "message": "Field 'display-name' must have one or more non-whitespace characters"
     }
 
 def test_get_player_by_id_happy_path(client, five_players):
@@ -148,8 +147,8 @@ def test_get_player_by_id_happy_path(client, five_players):
     assert response.status_code == 200
     assert response_body == {
         "id": 2,
-        "user_name": five_players[1].user_name,
-        "display_name": five_players[1].display_name
+        "user-name": five_players[1].user_name,
+        "display-name": five_players[1].display_name
     }
 
 def test_get_player_by_id_invalid_id(client):
@@ -208,8 +207,8 @@ def test_update_player_happy_path(client, five_players):
     EXPECTED_USER_NAME = "chimerror"
     EXPECTED_DISPLAY_NAME = "Chimerelda E. Error"
     put_response = client.put("/players/2", json = {
-        "user_name": EXPECTED_USER_NAME,
-        "display_name": EXPECTED_DISPLAY_NAME })
+        "user-name": EXPECTED_USER_NAME,
+        "display-name": EXPECTED_DISPLAY_NAME })
     put_response_body = put_response.text
 
     assert put_response.status_code == 200
@@ -222,14 +221,14 @@ def test_update_player_happy_path(client, five_players):
     assert get_response.status_code == 200
     assert get_response_body == {
         "id": 2,
-        "user_name": EXPECTED_USER_NAME,
-        "display_name": EXPECTED_DISPLAY_NAME
+        "user-name": EXPECTED_USER_NAME,
+        "display-name": EXPECTED_DISPLAY_NAME
     }
 
 def test_update_player_invalid_id(client):
     response = client.put("/players/foo", json = {
-        "user_name": "InvalidId",
-        "display_name": "Invalid ID on Update" })
+        "user-name": "InvalidId",
+        "display-name": "Invalid ID on Update" })
     response_body = response.get_json()
 
     assert response.status_code == 400
@@ -239,8 +238,8 @@ def test_update_player_invalid_id(client):
 
 def test_update_player_nonexistent_id(client, five_players):
     response = client.put("/players/7", json = {
-        "user_name": "NonexistentId",
-        "display_name": "Nonexistent ID on Update" })
+        "user-name": "NonexistentId",
+        "display-name": "Nonexistent ID on Update" })
     response_body = response.get_json()
 
     assert response.status_code == 404
