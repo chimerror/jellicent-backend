@@ -145,6 +145,141 @@ def test_create_game_happy_path_seeding(client, five_players):
     game2 = validate_game_id(game2_id)
     assert game1.deck == game2.deck
 
+def test_create_game_missing_player_ids(client, five_players):
+    response = client.post("/games", json = {
+        "use-advanced-scoring": True,
+        "assign-wilds-on-take": True
+    })
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "Missing required field 'player-ids'"
+    }
+
+def test_create_game_non_list_player_ids(client, five_players):
+    response = client.post("/games", json = {
+        "player-ids": 13,
+        "use-advanced-scoring": True,
+        "assign-wilds-on-take": True
+    })
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "Field 'player-ids' must be a list of valid existing player ids with 3 to 5 elements."
+    }
+
+def test_create_game_empty_player_ids(client, five_players):
+    response = client.post("/games", json = {
+        "player-ids": [],
+        "use-advanced-scoring": True,
+        "assign-wilds-on-take": True
+    })
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "Field 'player-ids' must be a list of valid existing player ids with 3 to 5 elements."
+    }
+
+def test_create_game_too_few_player_ids(client, five_players):
+    response = client.post("/games", json = {
+        "player-ids": [1, 2],
+        "use-advanced-scoring": True,
+        "assign-wilds-on-take": True
+    })
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "Field 'player-ids' must be a list of valid existing player ids with 3 to 5 elements."
+    }
+
+def test_create_game_too_many_player_ids(client, five_players):
+    response = client.post("/games", json = {
+        "player-ids": [1, 2, 3, 4, 5, 6],
+        "use-advanced-scoring": True,
+        "assign-wilds-on-take": True
+    })
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "Field 'player-ids' must be a list of valid existing player ids with 3 to 5 elements."
+    }
+
+def test_create_game_invalid_player_id(client, five_players):
+    response = client.post("/games", json = {
+        "player-ids": [1, 2, 3, "foo"],
+        "use-advanced-scoring": True,
+        "assign-wilds-on-take": True
+    })
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "'foo' is not a valid player ID"
+    }
+
+def test_create_game_nonexistent_player_id(client, five_players):
+    response = client.post("/games", json = {
+        "player-ids": [1, 7, 3],
+        "use-advanced-scoring": True,
+        "assign-wilds-on-take": True
+    })
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "No player with ID 7 was found"
+    }
+
+def test_create_game_duplicated_player_id(client, five_players):
+    response = client.post("/games", json = {
+        "player-ids": [1, 3, 2, 3],
+        "use-advanced-scoring": True,
+        "assign-wilds-on-take": True
+    })
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "Player ID 3 was duplicated in field 'player-ids'"
+    }
+
+def test_create_game_missing_advanced_scoring(client, five_players):
+    post_response = client.post("/games", json = {
+        "player-ids": [2, 4, 1],
+        "assign-wilds-on-take": True
+    })
+    post_response_body = post_response.text
+    post_response_match = CREATE_RESPONSE_REGEX.match(post_response_body)
+
+    assert post_response.status_code == 201
+    game_id =  post_response_match.group("game_id")
+    get_response = client.get(f"/games/{game_id}")
+    get_response_body = get_response.get_json()
+
+    assert get_response.status_code == 200
+    assert get_response_body["use-advanced-scoring"] == False
+
+def test_create_game_missing_assign_wilds_on_take(client, five_players):
+    post_response = client.post("/games", json = {
+        "player-ids": [2, 4, 1],
+        "use-advanced-scoring": True
+    })
+    post_response_body = post_response.text
+    post_response_match = CREATE_RESPONSE_REGEX.match(post_response_body)
+
+    assert post_response.status_code == 201
+    game_id =  post_response_match.group("game_id")
+    get_response = client.get(f"/games/{game_id}")
+    get_response_body = get_response.get_json()
+
+    assert get_response.status_code == 200
+    assert get_response_body["assign-wilds-on-take"] == False
+
 def validate_response_body_players(
     response_body, expected_player_ids, removed_card = None):
     actual_players = response_body["players"]

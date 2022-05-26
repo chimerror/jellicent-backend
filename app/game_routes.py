@@ -31,7 +31,7 @@ def create_game():
         for existing_player in players:
             if existing_player.id == player.id:
                 abort(make_response(
-                    {"message": "Player ID {player_id} was duplicated in field 'player-ids'"},
+                    {"message": f"Player ID {player_id} was duplicated in field 'player-ids'"},
                     400))
 
         players.append(player)
