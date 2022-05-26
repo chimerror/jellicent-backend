@@ -79,7 +79,7 @@ class Game(db.Model):
 
 def validate_game_id(game_id, game_not_found_status_code = 404):
     try:
-        uuid_game_id = UUID(game_id)
+        uuid_game_id = uuid.UUID(game_id)
     except:
         abort(make_response(
             {"message": f"'{game_id}' is not a valid game ID"}, 400))

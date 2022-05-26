@@ -280,6 +280,22 @@ def test_create_game_missing_assign_wilds_on_take(client, five_players):
     assert get_response.status_code == 200
     assert get_response_body["assign-wilds-on-take"] == False
 
+def test_get_game_by_id_invalid_id(client, one_game):
+    response = client.get(f"/games/foo")
+    response_body = response.get_json()
+    assert response.status_code == 400
+    assert response_body == {
+        "message": "'foo' is not a valid game ID"
+    }
+
+def test_get_game_by_id_nonexistent_id(client, one_game):
+    response = client.get(f"/games/9566f666-b279-4c5e-9983-8f4658e1da78")
+    response_body = response.get_json()
+    assert response.status_code == 404
+    assert response_body == {
+        "message": "No game with ID 9566f666-b279-4c5e-9983-8f4658e1da78 was found"
+    }
+
 def validate_response_body_players(
     response_body, expected_player_ids, removed_card = None):
     actual_players = response_body["players"]

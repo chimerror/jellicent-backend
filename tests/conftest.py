@@ -34,3 +34,11 @@ def five_players(app):
     db.session.add_all(players)
     db.session.commit()
     return players
+
+@pytest.fixture
+def one_game(client, five_players):
+    client.post("/games", json = {
+        "player-ids": [2, 3, 4],
+        "use-advanced-scoring": False,
+        "assign-wilds-on-take": True
+    })
