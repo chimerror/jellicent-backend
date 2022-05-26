@@ -1,5 +1,3 @@
-from urllib import response
-
 def test_get_all_players_happy_path(client, five_players):
     response = client.get("/players")
     response_body = response.get_json()
