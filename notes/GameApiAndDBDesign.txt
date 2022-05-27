@@ -1,5 +1,5 @@
 games/
-    GET - Get all active game IDs
+    GET - Get all active game IDs (Maybe skip in v1?)
     POST - Start a new game
         {
             "player_ids": [1, 3, 5, 4],
