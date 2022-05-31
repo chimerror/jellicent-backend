@@ -66,8 +66,8 @@ def create_game():
 @games_bp.route("/<game_id>", methods = ["GET"])
 def get_game_by_id(game_id):
     game = validate_game_id(game_id)
-    cards_left = len(game.deck) - game.current_deck_index
-    is_last_round = cards_left <= 15
+    cards_left = game.get_cards_left()
+    is_last_round = game.is_last_round()
 
     sorted_raw_players = sorted(game.players, key = lambda p: p.player_index)
     response_players = []
@@ -101,24 +101,12 @@ def get_game_by_id(game_id):
             response_player["wild-assignments"] = player.wild_assignments
         response_players.append(response_player)
 
-    piles = []
-    if not game.pile_one is None:
-        piles.append(game.pile_one)
-    if not game.pile_two is None:
-        piles.append(game.pile_two)
-    if not game.pile_three is None:
-        piles.append(game.pile_three)
-    if not game.pile_four is None:
-        piles.append(game.pile_four)
-    if not game.pile_five is None:
-        piles.append(game.pile_five)
-
     response_body = {
         "current-state": game.status,
         "active-player-index": game.active_player_index,
         "use-advanced-scoring": game.use_advanced_scoring,
         "assign-wilds-on-take": game.assign_wilds_on_take,
-        "piles": piles,
+        "piles": game.get_available_piles(),
         "cards-left": cards_left,
         "last-round": is_last_round,
         "players": response_players

@@ -70,7 +70,33 @@ class Game(db.Model):
         random.shuffle(deck)
         self.deck = deck
         self.current_deck_index = 0
+        self.reset_piles()
 
+    def get_player_count(self):
+        return len(self.players)
+
+    def get_cards_left(self):
+        return len(self.deck) - self.current_deck_index
+
+    def is_last_round(self):
+        return self.get_cards_left() <= 15
+
+    def get_available_piles(self):
+        piles = []
+        if not self.pile_one is None:
+            piles.append(self.pile_one)
+        if not self.pile_two is None:
+            piles.append(self.pile_two)
+        if not self.pile_three is None:
+            piles.append(self.pile_three)
+        if not self.pile_four is None:
+            piles.append(self.pile_four)
+        if not self.pile_five is None:
+            piles.append(self.pile_five)
+        return piles
+
+    def reset_piles(self):
+        player_count = self.get_player_count()
         self.pile_one = []
         self.pile_two = []
         self.pile_three = []
