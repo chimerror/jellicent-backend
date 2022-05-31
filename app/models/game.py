@@ -92,6 +92,12 @@ class Game(db.Model):
     def get_cards_left(self):
         return len(self.deck) - self.current_deck_index
 
+    def draw_card(self):
+        drawn_card = self.deck[self.current_deck_index]
+        self.current_deck_index += 1
+        self.status = GameStatus.PLACING_DRAW
+        return drawn_card
+
     def is_last_round(self):
         return self.get_cards_left() <= 15
 
@@ -138,6 +144,8 @@ class Game(db.Model):
             for player in self.players:
                 player.took_this_round = False
             self.status = GameStatus.WAITING_FOR_CHOICE
+
+        return taken_pile
 
     def reset_piles(self):
         player_count = self.get_player_count()

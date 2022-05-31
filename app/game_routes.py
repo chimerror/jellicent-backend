@@ -139,16 +139,21 @@ def make_choice(game_id):
     else:
         choice = GameChoice(choice)
     
+    response_body = {}
     if choice == GameChoice.DRAW_CARD:
-        # TODO : implement
-        pass
+        drawn_card = game.draw_card()
+        response_body["message"] = "Successfully drew card"
+        response_body["drawn-card"] = drawn_card.value
     else:
         pile_index_to_take = validate_pile_to_take(game, request_body)
         wild_assignments = \
             validate_wild_assignments(game, pile_index_to_take, request_body)
-        game.take_pile(pile_index_to_take, wild_assignments)
+        taken_pile = game.take_pile(pile_index_to_take, wild_assignments)
+        response_body["message"] = f"Successfully took pile {pile_index_to_take}"
+        response_body["taken-pile"] = taken_pile
 
     db.session.commit()
+    return response_body
 
 def validate_pile_to_take(game, request_body):
     if not "pile-to-take" in request_body:
