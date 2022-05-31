@@ -1,5 +1,8 @@
 from app import db
+from app.models.card_type import CardType, PLAYER_CARDS
 from app.models.game import Game, validate_game_id
+from app.models.game_choice import GameChoice, GAME_CHOICE_VALUES
+from app.models.game_status import GameStatus
 from app.models.player import validate_player_id
 from flask import Blueprint, make_response, abort, request
 from utils.utils import to_bool
@@ -114,3 +117,108 @@ def get_game_by_id(game_id):
     if game.removed_card:
         response_body["removed-card"] = game.removed_card
     return response_body
+
+@games_bp.route("/<game_id>/make_choice", methods = ["PATCH"])
+def make_choice(game_id):
+    game = validate_game_id(game_id)
+
+    if game.status != GameStatus.WAITING_FOR_CHOICE:
+        abort(make_response(
+            {"message": f"Game {game_id} has status '{game.status.value}' not '{GameStatus.WAITING_FOR_CHOICE.value}' and thus cannot accept choices at this time."},
+            400))
+
+    request_body = request.get_json()
+    if not "choice" in request_body:
+        abort(make_response(
+            { "message": "Missing required field 'choice'" }, 400))
+
+    choice = request_body["choice"]
+    if not choice in GAME_CHOICE_VALUES:
+        abort(make_response(
+            { "message": f"'{choice}' is not a valid game choice" }, 400))
+    else:
+        choice = GameChoice(choice)
+    
+    if choice == GameChoice.DRAW_CARD:
+        # TODO : implement
+        pass
+    else:
+        pile_index_to_take = validate_pile_to_take(game, request_body)
+        wild_assignments = \
+            validate_wild_assignments(game, pile_index_to_take, request_body)
+        game.take_pile(pile_index_to_take, wild_assignments)
+
+    db.session.commit()
+
+def validate_pile_to_take(game, request_body):
+    if not "pile-to-take" in request_body:
+        abort(make_response(
+            { "message": "Missing required field for 'take-pile', 'pile-to-take'" },
+            400))
+
+    available_piles = game.get_available_piles()
+    bad_pile_to_take_message = \
+        f"Field 'pile-to-take' must be a non-negative integer from 0 to {len(available_piles)}"
+    pile_index_to_take = 0
+    try:
+        pile_index_to_take = int(request_body["pile-to-take"])
+    except:
+        abort(make_response(
+            { "message": bad_pile_to_take_message }, 400))
+
+    if pile_index_to_take < 0 or pile_index_to_take > len(available_piles) - 1:
+        abort(make_response(
+            { "message": bad_pile_to_take_message }, 400))
+
+    return pile_index_to_take
+
+def validate_wild_assignments(game, pile_index_to_take, request_body):
+    available_piles = game.get_available_piles()
+    pile_wild_count = 0
+    for card_name in available_piles[pile_index_to_take]:
+        card = CardType(card_name)
+        if card == CardType.WILD:
+            pile_wild_count += 1
+
+    wild_assignments = None
+    if game.assign_wilds_on_take:
+        if pile_wild_count > 0:
+            if not "wild-assignments" in request_body:
+                abort(make_response(
+                    { "message": "Missing required field 'wild-assignments' for taking a pile with wild cards while wild assginment on take is enabled." },
+                    400))
+
+            raw_assignments = request_body["wild-assignments"]
+            bad_wild_assignments_list_message = \
+                f"Field 'wild-assignments' must be a list of player cards with {pile_wild_count} element(s)."
+            if not isinstance(raw_assignments, list):
+                abort(make_response(
+                    { "message": bad_wild_assignments_list_message },
+                    400))
+
+            if len(raw_assignments) != pile_wild_count:
+                abort(make_response(
+                    { "message": bad_wild_assignments_list_message },
+                    400))
+
+            wild_assignments = []
+            for raw_assignment in raw_assignments:
+                try:
+                    wild_assignment = CardType(raw_assignment)
+                    if not wild_assignment in PLAYER_CARDS:
+                            raise ValueError
+                    wild_assignments.append(wild_assignment)
+                except:
+                    abort(make_response(
+                        { "message": f"'{raw_assignment}' is not a valid player card for wild assignment" },
+                        400))
+        elif "wild-assignments" in request_body:
+            abort(make_response(
+                { "message": "'wild-assginments' field supplied despite no wilds in pile to take"},
+                400))
+    elif "wild-assignments" in request_body:
+        abort(make_response(
+            { "message": "'wild-assginments' field supplied despite wild assignment on take being disabled" },
+            400))
+    
+    return wild_assignments

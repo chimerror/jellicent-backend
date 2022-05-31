@@ -75,6 +75,20 @@ class Game(db.Model):
     def get_player_count(self):
         return len(self.players)
 
+    def get_active_player(self):
+        for player in self.players:
+            if player.player_index == self.active_player_index:
+                return player
+        raise RuntimeError("Could not find active player in game!")
+
+    def move_to_next_player(self):
+        while True:
+            self.active_player_index += 1
+            if self.active_player_index >= len(self.players):
+                self.active_player_index = 0
+            if not self.players[self.active_player_index].took_this_round:
+                break
+
     def get_cards_left(self):
         return len(self.deck) - self.current_deck_index
 
@@ -94,6 +108,36 @@ class Game(db.Model):
         if not self.pile_five is None:
             piles.append(self.pile_five)
         return piles
+
+    def take_pile(self, pile_index_to_take, wild_assignments = None):
+        available_piles = self.get_available_piles()
+        taken_pile = available_piles.pop(pile_index_to_take)
+
+        active_player = self.get_active_player()
+        for card_string in taken_pile:
+            card_type = CardType(card_string)
+            active_player.increment_count_by_card_type(card_type)
+        if wild_assignments:
+            active_player.add_wild_assignments(wild_assignments)
+        active_player.took_this_round = True
+
+        piles_left = len(available_piles)
+        if piles_left > 0:
+            self.pile_one = available_piles[0] if piles_left >= 1 else None
+            self.pile_two = available_piles[1] if piles_left >= 2 else None
+            self.pile_three = available_piles[2] if piles_left >= 3 else None
+            self.pile_four = available_piles[3] if piles_left >= 4 else None
+            self.pile_five = available_piles[4] if piles_left >= 5 else None
+            self.move_to_next_player()
+            self.status = GameStatus.WAITING_FOR_CHOICE
+        elif self.is_last_round():
+            self.active_player_index = 0
+            self.status = GameStatus.FINAL_ASSIGNMENT
+        else:
+            self.reset_piles()
+            for player in self.players:
+                player.took_this_round = False
+            self.status = GameStatus.WAITING_FOR_CHOICE
 
     def reset_piles(self):
         player_count = self.get_player_count()

@@ -67,3 +67,15 @@ class GamePlayer(db.Model):
             self.plus_two_count = new_count
         else:
             raise ValueError(f"Unknown card type {card_type} passed to set_count_by_card_type")
+
+    def increment_count_by_card_type(self, card_type):
+        self.set_count_by_card_type(
+            card_type,
+            self.get_count_by_card_type(card_type) + 1)
+
+    def add_wild_assignments(self, new_assignments):
+        if self.wild_assignments:
+            for wild_assignment in new_assignments:
+                self.wild_assignments.apped(wild_assignment)
+        else:
+            self.wild_assignments = new_assignments
