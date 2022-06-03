@@ -124,7 +124,7 @@ def make_choice(game_id):
 
     if game.status != GameStatus.WAITING_FOR_CHOICE:
         abort(make_response(
-            {"message": f"Game {game_id} has status '{game.status.value}' not '{GameStatus.WAITING_FOR_CHOICE.value}' and thus cannot accept choices at this time."},
+            {"message": f"Game {game_id} has status '{game.status.value}' not '{GameStatus.WAITING_FOR_CHOICE.value}' and thus cannot accept choices at this time"},
             400))
 
     request_body = request.get_json()
@@ -178,7 +178,7 @@ def validate_pile_to_take(game, request_body):
     pile_to_take = available_piles[pile_index_to_take]
     if len(pile_to_take) < 1:
         abort(make_response(
-            { "message": f"Cannot take pile {pile_index_to_take} as no cards have been placed in it." }, 400))
+            { "message": f"Cannot take pile {pile_index_to_take} as no cards have been placed in it" }, 400))
 
     return pile_index_to_take
 
@@ -195,7 +195,7 @@ def validate_wild_assignments(game, pile_index_to_take, request_body):
         if pile_wild_count > 0:
             if not "wild-assignments" in request_body:
                 abort(make_response(
-                    { "message": "Missing required field 'wild-assignments' for taking a pile with wild cards while wild assginment on take is enabled." },
+                    { "message": "Missing required field 'wild-assignments' for taking a pile with wild cards while wild assginment on take is enabled" },
                     400))
 
             raw_assignments = request_body["wild-assignments"]
