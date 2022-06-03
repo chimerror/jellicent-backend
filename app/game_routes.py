@@ -175,6 +175,11 @@ def validate_pile_to_take(game, request_body):
         abort(make_response(
             { "message": bad_pile_to_take_message }, 400))
 
+    pile_to_take = available_piles[pile_index_to_take]
+    if len(pile_to_take) < 1:
+        abort(make_response(
+            { "message": f"Cannot take pile {pile_index_to_take} as no cards have been placed in it." }, 400))
+
     return pile_index_to_take
 
 def validate_wild_assignments(game, pile_index_to_take, request_body):
