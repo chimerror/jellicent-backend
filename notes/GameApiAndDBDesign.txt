@@ -10,7 +10,7 @@ games/
 games/<id>/
     GET - Get current status
     DELETE - Delete game (Maybe skip?)
-games/<id>/make_choice
+games/<id>/make-choice
     PATCH - Make choice
         {
             "choice": "draw-card",
@@ -20,12 +20,12 @@ games/<id>/make_choice
             "pile-to-take": 2,
             "wild-assignments": ["rabbit", "snake"] // Only if necessary
         }
-games/<id>/place_draw
+games/<id>/place-draw
     PATCH - place draw
         {
             "pile-to-place-on": 3
         }
-games/<id>/finally_assign
+games/<id>/finally-assign
     PATCH - assign wilds/positive cards
         {
             "assign-manually": false

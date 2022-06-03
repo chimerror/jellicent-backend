@@ -118,7 +118,7 @@ def get_game_by_id(game_id):
         response_body["removed-card"] = game.removed_card
     return response_body
 
-@games_bp.route("/<game_id>/make_choice", methods = ["PATCH"])
+@games_bp.route("/<game_id>/make-choice", methods = ["PATCH"])
 def make_choice(game_id):
     game = validate_game_id(game_id)
 
