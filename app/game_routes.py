@@ -232,3 +232,44 @@ def validate_wild_assignments(game, pile_index_to_take, request_body):
             400))
     
     return wild_assignments
+
+@games_bp.route("/<game_id>/place-draw", methods = ["PATCH"])
+def place_draw(game_id):
+    game = validate_game_id(game_id)
+
+    if game.status != GameStatus.PLACING_DRAW:
+        abort(make_response(
+            {"message": f"Game {game_id} has status '{game.status.value}' not '{GameStatus.PLACING_DRAW.value}' and thus cannot accept card placement at this time"},
+            400))
+
+    request_body = request.get_json()
+    if not "pile-to-place-on" in request_body:
+        abort(make_response(
+            { "message": "Missing required field 'pile-to-place-on'" }, 400))
+
+    available_piles = game.get_available_piles()
+    bad_pile_to_place_on_message = \
+        f"Field 'pile-to-place-on' must be a non-negative integer from 0 to {len(available_piles)}"
+    pile_index_to_place_on = 0
+    try:
+        pile_index_to_place_on = int(request_body["pile-to-place-on"])
+    except:
+        abort(make_response(
+            { "message": bad_pile_to_place_on_message }, 400))
+
+    if pile_index_to_place_on < 0 or pile_index_to_place_on > len(available_piles) - 1:
+        abort(make_response(
+            { "message": bad_pile_to_place_on_message }, 400))
+
+    pile_to_place_on = available_piles[pile_index_to_place_on]
+    if len(pile_to_place_on) == 3:
+        abort(make_response(
+            { "message": f"Cannot place on pile {pile_index_to_place_on} as three cards have already been placed in it, so it's full" }, 400))
+
+    placed_card = game.get_next_card()
+    game.place_on_pile(pile_index_to_place_on)
+    db.session.commit()
+    return {
+        "message": f"Successfully placed {placed_card} on pile {pile_index_to_place_on}",
+        "card_placed": placed_card
+    }

@@ -92,9 +92,11 @@ class Game(db.Model):
     def get_cards_left(self):
         return len(self.deck) - self.current_deck_index
 
+    def get_next_card(self):
+        return self.deck[self.current_deck_index]
+
     def draw_card(self):
-        drawn_card = self.deck[self.current_deck_index]
-        self.current_deck_index += 1
+        drawn_card = self.get_next_card()
         self.status = GameStatus.PLACING_DRAW
         return drawn_card
 
@@ -146,6 +148,25 @@ class Game(db.Model):
             self.status = GameStatus.WAITING_FOR_CHOICE
 
         return taken_pile
+
+    def place_on_pile(self, pile_index_to_place_on):
+        card_to_place = self.get_next_card()
+        if pile_index_to_place_on == 0 and (not self.pile_one is None):
+            self.pile_one.append(card_to_place)
+        elif pile_index_to_place_on == 1 and (not self.pile_two is None):
+            self.pile_two.append(card_to_place)
+        elif pile_index_to_place_on == 2 and (not self.pile_three is None):
+            self.pile_three.append(card_to_place)
+        elif pile_index_to_place_on == 3 and (not self.pile_four is None):
+            self.pile_four.append(card_to_place)
+        elif pile_index_to_place_on == 4 and (not self.pile_five is None):
+            self.pile_five.append(card_to_place)
+        else:
+            raise ValueError(f"Invalid pile index '{pile_index_to_place_on}' supplied to place_on_pile")
+
+        self.current_deck_index += 1
+        self.move_to_next_player()
+        self.status = GameStatus.WAITING_FOR_CHOICE
 
     def reset_piles(self):
         player_count = self.get_player_count()
