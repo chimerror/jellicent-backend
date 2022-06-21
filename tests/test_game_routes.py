@@ -31,6 +31,7 @@ def test_create_game_happy_path_three_players(client, five_players):
     assert get_response_body["cards-left"] == 64
     assert get_response_body["current-state"] == \
         GameStatus.WAITING_FOR_CHOICE.value
+    assert get_response_body["choices-allowed"] == ["draw-card"]
     assert get_response_body["last-round"] == False
     assert get_response_body["piles"] == [[], [], []]
 
@@ -63,6 +64,7 @@ def test_create_game_happy_path_four_players(client, five_players):
     assert get_response_body["cards-left"] == 72
     assert get_response_body["current-state"] == \
         GameStatus.WAITING_FOR_CHOICE.value
+    assert get_response_body["choices-allowed"] == ["draw-card"]
     assert get_response_body["last-round"] == False
     assert get_response_body["piles"] == [[], [], [], []]
 
@@ -92,6 +94,7 @@ def test_create_game_happy_path_five_players(client, five_players):
     assert get_response_body["cards-left"] == 71
     assert get_response_body["current-state"] == \
         GameStatus.WAITING_FOR_CHOICE.value
+    assert get_response_body["choices-allowed"] == ["draw-card"]
     assert get_response_body["last-round"] == False
     assert get_response_body["piles"] == [[], [], [], [], []]
 
@@ -135,6 +138,8 @@ def test_create_game_happy_path_seeding(client, five_players):
     assert get1_response_body["cards-left"] == get2_response_body["cards-left"]
     assert get1_response_body["current-state"] == \
         get2_response_body["current-state"]
+    assert get1_response_body["choices-allowed"] == \
+        get2_response_body["choices-allowed"]
     assert get1_response_body["last-round"] == get2_response_body["last-round"]
     assert get1_response_body["piles"] == get2_response_body["piles"]
     assert get1_response_body["removed-card"] == \

@@ -1,5 +1,6 @@
 {
     "current-state": "waiting-for-choice",
+    "choices-allowed": ["draw-card", "take-pile"], // Only returned when waiting-for-choice
     "active-player-index": 0,
     "use-advanced-scoring": true,
     "assign-wilds-on-take": true,

@@ -116,6 +116,15 @@ def get_game_by_id(game_id):
     }
     if game.removed_card:
         response_body["removed-card"] = game.removed_card
+    if game.status == GameStatus.WAITING_FOR_CHOICE:
+        choices_allowed = []
+        for pile in response_body["piles"]:
+            pile_card_count = len(pile)
+            if not "take-pile" in choices_allowed and pile_card_count > 0:
+                choices_allowed.append("take-pile")
+            elif not "draw-card" in choices_allowed and pile_card_count < 3:
+                choices_allowed.append("draw-card")
+        response_body["choices-allowed"] = choices_allowed
     return response_body
 
 @games_bp.route("/<game_id>/make-choice", methods = ["PATCH"])
