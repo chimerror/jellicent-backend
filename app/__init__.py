@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from dotenv import load_dotenv
@@ -10,6 +11,7 @@ load_dotenv()
 
 def create_app(test_config = None):
     app = Flask(__name__)
+    CORS(app) # TODO: We should be more judicious here about CORS
 
     if not test_config:
         app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
