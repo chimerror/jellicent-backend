@@ -77,6 +77,7 @@ def get_game_by_id(game_id):
     for player in sorted_raw_players:
         response_player = {
             "id": player.player_id,
+            "display-name": player.player.display_name,
             "starting-card": player.starting_card,
             "took-this-round": player.took_this_round
         }

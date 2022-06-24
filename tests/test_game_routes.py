@@ -8,9 +8,13 @@ CREATE_RESPONSE_REGEX = re.compile(
     r"^Game with ID (?P<game_id>[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}) successfully created$")
 
 def test_create_game_happy_path_three_players(client, five_players):
-    EXPECTED_PLAYER_IDS = [2, 3, 4]
+    EXPECTED_PLAYERS = [
+        (2, "Chimerelda Error"),
+        (3, "Ada Gates"),
+        (4, "Glitch")
+    ]
     post_response = client.post("/games", json = {
-        "player-ids": EXPECTED_PLAYER_IDS,
+        "player-ids": [player[0] for player in EXPECTED_PLAYERS],
         "use-advanced-scoring": False,
         "assign-wilds-on-take": True
     })
@@ -38,12 +42,17 @@ def test_create_game_happy_path_three_players(client, five_players):
     removed_card = get_response_body["removed-card"]
     assert removed_card in PLAYER_CARD_VALUES
 
-    validate_response_body_players(get_response_body, EXPECTED_PLAYER_IDS, removed_card)
+    validate_response_body_players(get_response_body, EXPECTED_PLAYERS, removed_card)
 
 def test_create_game_happy_path_four_players(client, five_players):
-    EXPECTED_PLAYER_IDS = [2, 3, 1, 4]
+    EXPECTED_PLAYERS = [
+        (2, "Chimerelda Error"),
+        (3, "Ada Gates"),
+        (1, "Jayce Mitchell"),
+        (4, "Glitch")
+    ]
     post_response = client.post("/games", json = {
-        "player-ids": EXPECTED_PLAYER_IDS,
+        "player-ids": [player[0] for player in EXPECTED_PLAYERS],
         "use-advanced-scoring": True,
         "assign-wilds-on-take": False
     })
@@ -68,12 +77,18 @@ def test_create_game_happy_path_four_players(client, five_players):
     assert get_response_body["last-round"] == False
     assert get_response_body["piles"] == [[], [], [], []]
 
-    validate_response_body_players(get_response_body, EXPECTED_PLAYER_IDS)
+    validate_response_body_players(get_response_body, EXPECTED_PLAYERS)
 
 def test_create_game_happy_path_five_players(client, five_players):
-    EXPECTED_PLAYER_IDS = [2, 3, 1, 4, 5]
+    EXPECTED_PLAYERS = [
+        (2, "Chimerelda Error"),
+        (3, "Ada Gates"),
+        (1, "Jayce Mitchell"),
+        (4, "Glitch"),
+        (5, "0xF0C5")
+    ]
     post_response = client.post("/games", json = {
-        "player-ids": EXPECTED_PLAYER_IDS,
+        "player-ids": [player[0] for player in EXPECTED_PLAYERS],
         "use-advanced-scoring": True,
         "assign-wilds-on-take": True
     })
@@ -98,7 +113,7 @@ def test_create_game_happy_path_five_players(client, five_players):
     assert get_response_body["last-round"] == False
     assert get_response_body["piles"] == [[], [], [], [], []]
 
-    validate_response_body_players(get_response_body, EXPECTED_PLAYER_IDS)
+    validate_response_body_players(get_response_body, EXPECTED_PLAYERS)
 
 def test_create_game_happy_path_seeding(client, five_players):
     EXPECTED_PLAYER_IDS = [2, 3, 4]
@@ -302,13 +317,11 @@ def test_get_game_by_id_nonexistent_id(client, one_game):
     }
 
 def validate_response_body_players(
-    response_body, expected_player_ids, removed_card = None):
+    response_body, expected_players, removed_card = None):
     actual_players = response_body["players"]
-    assert len(actual_players) == len(expected_player_ids)
-    actual_player_ids = []
+    assert len(actual_players) == len(expected_players)
     seen_starting_cards = []
     for player in actual_players:
-        actual_player_ids.append(player["id"])
         assert player["took-this-round"] == False
         starting_card = player["starting-card"]
         assert starting_card in PLAYER_CARD_VALUES
@@ -318,4 +331,12 @@ def validate_response_body_players(
         assert player["hand"] == {
             starting_card: 1
         }
-    assert sorted(actual_player_ids) == sorted(expected_player_ids)
+    sorted_actual_players = \
+        sorted(actual_players, key=lambda player: player["id"])
+    sorted_expected_players = \
+        sorted(expected_players, key=lambda player: player[0])
+    for current_player_index in range(len(sorted_expected_players)):
+        expected_player = sorted_expected_players[current_player_index]
+        actual_player = sorted_actual_players[current_player_index]
+        assert actual_player["id"] == expected_player[0]
+        assert actual_player["display-name"] == expected_player[1]
