@@ -125,6 +125,8 @@ def get_game_by_id(game_id):
             elif not "draw-card" in choices_allowed and pile_card_count < 3:
                 choices_allowed.append("draw-card")
         response_body["choices-allowed"] = choices_allowed
+    elif game.status == GameStatus.PLACING_DRAW:
+        response_body["card-to-place"] = game.get_card_to_place()
     return response_body
 
 @games_bp.route("/<game_id>/make-choice", methods = ["PATCH"])

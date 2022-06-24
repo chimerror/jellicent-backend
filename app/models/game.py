@@ -95,6 +95,12 @@ class Game(db.Model):
     def get_next_card(self):
         return self.deck[self.current_deck_index]
 
+    def get_card_to_place(self):
+        if self.status == GameStatus.PLACING_DRAW:
+            return self.deck[self.current_deck_index - 1]
+        else:
+            return None
+
     def draw_card(self):
         drawn_card = self.get_next_card()
         self.status = GameStatus.PLACING_DRAW
