@@ -155,7 +155,7 @@ def make_choice(game_id):
     if choice == GameChoice.DRAW_CARD:
         drawn_card = game.draw_card()
         response_body["message"] = "Successfully drew card"
-        response_body["drawn-card"] = drawn_card.value
+        response_body["drawn-card"] = drawn_card
     else:
         pile_index_to_take = validate_pile_to_take(game, request_body)
         wild_assignments = \
